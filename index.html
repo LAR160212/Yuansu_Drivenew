@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#090b12">
+<title>Yuansu Drive 2.0</title>
+<style>
+:root{
+ --bg:#f5f7fb;--bg2:#eef1f8;--panel:rgba(255,255,255,.72);--panel-solid:#fff;
+ --text:#101322;--muted:#718096;--line:rgba(15,23,42,.09);
+ --accent:#6d5dfc;--accent2:#39b8ff;--good:#14b889;--danger:#ef5570;
+ --shadow:0 24px 70px rgba(31,35,70,.10);--shadow-sm:0 10px 30px rgba(31,35,70,.08);
+ --radius:22px;
+}
+[data-theme="dark"]{
+ --bg:#080a12;--bg2:#0d1120;--panel:rgba(17,21,35,.68);--panel-solid:#111523;
+ --text:#eef2ff;--muted:#8995b2;--line:rgba(255,255,255,.09);
+ --shadow:0 28px 80px rgba(0,0,0,.34);--shadow-sm:0 12px 34px rgba(0,0,0,.25);
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:Inter,"SF Pro Display","Microsoft YaHei","PingFang SC",sans-serif;color:var(--text);background:var(--bg);transition:background .35s,color .35s}
+body{overflow-x:hidden}
+button,input{font:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.bg{position:fixed;inset:0;z-index:-2;overflow:hidden;background:
+ radial-gradient(circle at 10% 10%,rgba(109,93,252,.12),transparent 28%),
+ radial-gradient(circle at 90% 5%,rgba(57,184,255,.11),transparent 25%),var(--bg)}
+.orb{position:absolute;width:42vw;height:42vw;min-width:320px;min-height:320px;border-radius:50%;filter:blur(70px);opacity:.24;animation:float 18s ease-in-out infinite alternate}
+.orb.a{left:-14vw;top:-14vw;background:#786cff}.orb.b{right:-16vw;top:10vh;background:#34c5ff;animation-duration:23s}.orb.c{left:35vw;bottom:-28vw;background:#a855f7;animation-duration:27s}
+@keyframes float{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(5vw,3vh,0) scale(1.13)}}
+.app{display:grid;grid-template-columns:255px minmax(0,1fr);min-height:100vh}
+.sidebar{position:sticky;top:0;height:100vh;padding:24px 16px;display:flex;flex-direction:column;border-right:1px solid var(--line);background:rgba(255,255,255,.20);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px)}
+.brand{display:flex;align-items:center;gap:11px;padding:3px 10px 25px}
+.logo{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;color:#fff;font-weight:900;font-size:20px;background:linear-gradient(135deg,#6d5dfc,#36c7ff);box-shadow:0 12px 30px rgba(109,93,252,.28);animation:logoPulse 4s ease-in-out infinite}
+@keyframes logoPulse{50%{box-shadow:0 14px 38px rgba(109,93,252,.42)}}
+.brand b{font-size:18px}.brand small{display:block;color:var(--muted);font-size:10px;margin-top:2px}
+.nav{display:grid;gap:6px}.nav button{border:0;background:transparent;color:var(--muted);padding:12px 13px;border-radius:14px;text-align:left;display:flex;gap:11px;align-items:center;transition:.2s}
+.nav button:hover{color:var(--text);background:rgba(109,93,252,.07);transform:translateX(2px)}
+.nav button.active{color:var(--accent);background:rgba(109,93,252,.10);box-shadow:inset 3px 0 var(--accent)}
+.nav i{width:21px;text-align:center;font-style:normal}
+.side-bottom{margin-top:auto}
+.storage{padding:15px;border:1px solid var(--line);background:var(--panel);border-radius:18px;box-shadow:var(--shadow-sm)}
+.storage-head{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:8px}
+.storage strong{color:var(--text)}
+.track{height:7px;border-radius:50px;background:var(--line);overflow:hidden}.track span{display:block;height:100%;width:0;border-radius:inherit;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .6s}
+.side-actions{display:flex;gap:7px;margin-top:10px}.side-actions button{flex:1;border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:10px;padding:8px;font-size:11px}
+.main{min-width:0;padding:22px 28px 34px}
+.top{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.search{flex:1;position:relative}.search input{width:100%;height:48px;border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:15px;padding:0 45px 0 16px;backdrop-filter:blur(18px);box-shadow:var(--shadow-sm);transition:.2s}
+.search input:focus{border-color:rgba(109,93,252,.45);box-shadow:0 0 0 4px rgba(109,93,252,.10),var(--shadow-sm)}
+.search span{position:absolute;right:15px;top:13px;color:var(--muted)}
+.top-btn{height:46px;border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:14px;padding:0 13px;box-shadow:var(--shadow-sm);transition:.2s}.top-btn:hover{transform:translateY(-2px)}
+.upload-btn{border:0;background:linear-gradient(135deg,var(--accent),#7d72ff);color:#fff;box-shadow:0 12px 28px rgba(109,93,252,.25);padding:0 17px}
+.hero{position:relative;overflow:hidden;border:1px solid var(--line);background:linear-gradient(135deg,rgba(109,93,252,.12),rgba(57,184,255,.06)),var(--panel);border-radius:26px;padding:25px;box-shadow:var(--shadow);margin-bottom:22px}
+.hero:after{content:"";position:absolute;width:240px;height:240px;border-radius:50%;right:-90px;top:-120px;background:rgba(109,93,252,.15);filter:blur(35px)}
+.hero h1{margin:0;font-size:27px;letter-spacing:-.7px}.hero p{margin:7px 0 0;color:var(--muted);font-size:13px}.hero .chips{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}.chip{font-size:11px;padding:7px 10px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.22);color:var(--muted)}
+.section-title{display:flex;align-items:center;justify-content:space-between;margin:22px 2px 11px}.section-title h2{font-size:16px;margin:0}.section-title span{font-size:11px;color:var(--muted)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+.file-card{position:relative;min-height:170px;padding:17px;border:1px solid var(--line);background:var(--panel);border-radius:19px;box-shadow:var(--shadow-sm);backdrop-filter:blur(18px);transition:.23s;animation:rise .45s both;overflow:hidden}
+.file-card:hover{transform:translateY(-5px);box-shadow:0 24px 45px rgba(31,35,70,.14);border-color:rgba(109,93,252,.20)}
+.file-card:before{content:"";position:absolute;inset:-60% auto auto -40%;width:130px;height:130px;background:rgba(109,93,252,.13);filter:blur(25px);border-radius:50%;opacity:0;transition:.25s}.file-card:hover:before{opacity:1}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.card-icon{height:82px;display:grid;place-items:center;font-size:43px}.card-name{font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.card-meta{font-size:10px;color:var(--muted);margin-top:5px}.card-more{position:absolute;right:9px;top:9px;border:0;background:transparent;color:var(--muted);font-size:18px}
+.list{border:1px solid var(--line);border-radius:20px;overflow:hidden;background:var(--panel);box-shadow:var(--shadow-sm)}
+table{width:100%;border-collapse:collapse}th{font-size:11px;color:var(--muted);font-weight:600;text-align:left;padding:13px 16px;border-bottom:1px solid var(--line)}td{padding:13px 16px;border-bottom:1px solid var(--line);font-size:12px}tr:last-child td{border-bottom:0}tbody tr{transition:.18s}tbody tr:hover{background:rgba(109,93,252,.045)}
+.file-cell{display:flex;align-items:center;gap:11px;min-width:0}.tiny-icon{width:36px;height:36px;border-radius:11px;background:rgba(109,93,252,.08);display:grid;place-items:center;font-size:18px;flex:0 0 auto}.file-cell div:last-child{min-width:0}.file-cell strong{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.file-cell small{display:block;color:var(--muted);margin-top:3px}
+.row-actions{display:flex;gap:5px;justify-content:flex-end}.mini{border:1px solid var(--line);background:transparent;color:var(--muted);width:31px;height:31px;border-radius:9px}.mini:hover{color:var(--text);background:rgba(109,93,252,.07)}
+.empty{text-align:center;padding:60px 15px;color:var(--muted)}.empty b{display:block;color:var(--text);margin:8px}
+.drop{position:fixed;inset:0;z-index:30;display:none;place-items:center;background:rgba(8,10,18,.52);backdrop-filter:blur(12px)}.drop.show{display:grid}.drop-box{width:min(560px,calc(100% - 32px));padding:60px 25px;border:1.5px dashed rgba(255,255,255,.3);border-radius:28px;text-align:center;color:#fff;background:rgba(255,255,255,.07);animation:pop .25s both}.drop-box .big{font-size:50px}.drop-box b{display:block;font-size:20px;margin:10px}.drop-box span{font-size:12px;color:#bac5df}
+.modal-bg{position:fixed;inset:0;z-index:40;background:rgba(8,10,18,.45);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:18px}.modal-bg.show{display:flex}.modal{width:min(500px,100%);background:var(--panel-solid);border:1px solid var(--line);border-radius:22px;padding:20px;box-shadow:0 30px 80px rgba(0,0,0,.25);animation:pop .22s both}.modal h3{margin:0 0 14px}.field{margin:10px 0}.field label{display:block;color:var(--muted);font-size:11px;margin-bottom:6px}.field input{width:100%;padding:11px;border-radius:11px;border:1px solid var(--line);background:var(--bg2);color:var(--text)}.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}.modal-btn{padding:9px 13px;border-radius:10px;border:1px solid var(--line);background:transparent;color:var(--text)}.modal-btn.primary{border:0;background:var(--accent);color:#fff}.toast{position:fixed;right:22px;bottom:22px;z-index:80;padding:12px 15px;border-radius:13px;background:#111522;color:#fff;box-shadow:0 18px 45px rgba(0,0,0,.25);opacity:0;transform:translateY(12px);transition:.22s;pointer-events:none;font-size:12px}.toast.show{opacity:1;transform:none}
+.context{position:fixed;z-index:60;display:none;min-width:180px;padding:7px;background:var(--panel-solid);border:1px solid var(--line);border-radius:14px;box-shadow:0 22px 60px rgba(0,0,0,.18)}.context.show{display:block}.context button{display:block;width:100%;text-align:left;border:0;background:transparent;color:var(--text);padding:9px 10px;border-radius:9px;font-size:12px}.context button:hover{background:rgba(109,93,252,.08)}
+@keyframes pop{from{opacity:0;transform:scale(.96) translateY(8px)}to{opacity:1;transform:none}}
+@media(max-width:900px){.app{grid-template-columns:78px 1fr}.brand div:not(.logo),.nav span,.storage,.side-actions{display:none}.brand{justify-content:center;padding:3px 0 25px}.nav button{justify-content:center}.nav i{font-size:18px}.main{padding:18px}}
+@media(max-width:640px){.app{display:block}.sidebar{position:fixed;z-index:20;bottom:0;top:auto;height:68px;width:100%;padding:7px 10px;border-right:0;border-top:1px solid var(--line);flex-direction:row;background:var(--panel)}.brand,.side-bottom{display:none}.nav{width:100%;grid-template-columns:repeat(4,1fr)}.nav button{justify-content:center;padding:7px}.nav button.active{box-shadow:inset 0 -3px var(--accent)}.main{padding:13px 12px 84px}.top{flex-wrap:wrap}.search{order:2;flex-basis:100%}.hero{padding:20px}.hero h1{font-size:22px}.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.file-card{min-height:145px;padding:13px}.card-icon{height:63px;font-size:34px}.list{overflow:auto}table{min-width:620px}}
+</style>
+
+<!-- GitHub 连接配置直接内置于前端 index.html。 -->
+<script>
+/* Yuansu Drive · 前端直连配置 */
+const YUANSU_CONFIG = {
+  owner: 'lar160212',
+  repo: 'Yuansu_Drive-v2',
+  branch: 'main',
+  token: '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'
+};
+</script>
+</head>
+<body>
+<div class="bg"><div class="orb a"></div><div class="orb b"></div><div class="orb c"></div></div>
+<div class="app">
+<aside class="sidebar">
+  <div class="brand"><div class="logo">Y</div><div><b>Yuansu</b><small>DRIVE 2.0</small></div></div>
+  <nav class="nav">
+    <button class="active" data-view="all"><i>⌂</i><span>首页</span></button>
+    <button data-view="files"><i>▣</i><span>我的文件</span></button>
+    <button data-view="recent"><i>◷</i><span>最近文件</span></button>
+    <button data-view="images"><i>▧</i><span>图片</span></button>
+  </nav>
+  <div class="side-bottom">
+    <div class="storage"><div class="storage-head"><span>仓库存储</span><strong id="sizeText">0 B</strong></div><div class="track"><span id="sizeBar"></span></div><div class="storage-head" style="margin:8px 0 0"><span id="repoText">未连接</span><span id="countText">0 项</span></div></div>
+    <div class="side-actions"><button id="settingsBtn">⚙ 设置</button><button id="themeBtn">☾</button></div>
+  </div>
+</aside>
+<main class="main">
+  <div class="top">
+    <div class="search"><input id="search" placeholder="搜索文件、文件夹…"><span>⌕</span></div>
+    <button class="top-btn" id="refresh">↻</button>
+    <button class="top-btn" id="themeMobile">☾</button>
+    <button class="top-btn upload-btn" id="upload">＋ 上传</button>
+  </div>
+  <section class="hero">
+    <h1 id="hello">欢迎来到 Yuansu Drive</h1>
+    <p>你的文件，整齐地放在云端。单文件最大 80 MiB。</p>
+    <div class="chips"><span class="chip">✦ GitHub Storage</span><span class="chip">⚡ Fast UI</span><span class="chip">◉ Private Token</span></div>
+  </section>
+  <div id="recentSection">
+    <div class="section-title"><h2>最近文件</h2><span id="recentHint">0 项</span></div>
+    <div class="cards" id="cards"></div>
+  </div>
+  <div class="section-title"><h2 id="listTitle">所有文件</h2><span>实时读取 GitHub</span></div>
+  <div class="list" id="list"></div>
+</main>
+</div>
+
+<div class="drop" id="drop"><div class="drop-box"><div class="big">☁</div><b>松开鼠标，开始上传</b><span>Yuansu Drive · 单文件最大 80 MiB</span></div></div>
+<input type="file" id="fileInput" multiple hidden>
+<div class="modal-bg" id="modalBg"><div class="modal"><h3 id="modalTitle"></h3><div id="modalBody"></div><div class="modal-actions"><button class="modal-btn" id="modalCancel">取消</button><button class="modal-btn primary" id="modalOk">确定</button></div></div></div>
+<div class="context" id="context"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+(()=>{'use strict';
+const MAX=80*1024*1024;
+const savedCfg=JSON.parse(localStorage.getItem('yuansu-drive-config')||'{}');
+const cfg=Object.assign({},YUANSU_CONFIG,savedCfg);
+const state={items:[],view:'all',modal:null,contextItem:null};
+const $=id=>document.getElementById(id);
+const theme=localStorage.getItem('yuansu-theme')||'dark';
+document.documentElement.dataset.theme=theme;
+function bytes(n){if(!n)return'0 B';let u=['B','KB','MB','GB','TB'],i=0;while(n>=1024&&i<4){n/=1024;i++}return(i? n.toFixed(n<10?2:1):Math.round(n))+' '+u[i]}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function toast(s){$('toast').textContent=s;$('toast').classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>$('toast').classList.remove('show'),2800)}
+function ext(n){let x=n.split('.').pop().toLowerCase();return x===n.toLowerCase()?'':x}
+function icon(x){if(x.type==='dir')return'📁';let e=ext(x.name);if(['png','jpg','jpeg','gif','webp','svg'].includes(e))return'🖼️';if(['mp4','webm','mov','mkv','avi'].includes(e))return'🎬';if(['mp3','wav','flac','aac'].includes(e))return'🎵';if(['zip','rar','7z','tar','gz'].includes(e))return'📦';if(['pdf'].includes(e))return'📕';if(['ppt','pptx'].includes(e))return'📽️';if(['doc','docx'].includes(e))return'📝';if(['xls','xlsx','csv'].includes(e))return'📊';return'📄'}
+function api(path,opt={}){if(!cfg.token)return Promise.reject(new Error('请先在设置里配置 GitHub Token'));return fetch('https://api.github.com'+path,Object.assign({},opt,{headers:Object.assign({'Accept':'application/vnd.github+json','Authorization':'Bearer '+cfg.token,'X-GitHub-Api-Version':'2026-03-10'},opt.headers||{})})).then(async r=>{let d=null;try{d=await r.json()}catch{}if(!r.ok){let e=new Error(d?.message||'HTTP '+r.status);e.status=r.status;throw e}return d})}
+async function load(){if(!cfg.owner||!cfg.repo||!cfg.token){openSettings();return}try{const data=await api(`/repos/${cfg.owner}/${cfg.repo}/contents?ref=${encodeURIComponent(cfg.branch||'main')}`);state.items=(Array.isArray(data)?data:[]).filter(x=>!['index.html','backend.html','README.md'].includes(x.name)&&!x.name.startsWith('.'));$('repoText').textContent=cfg.owner+'/'+cfg.repo;render();}catch(e){toast('读取失败：'+e.message)}}
+function filtered(){let a=state.items.filter(x=>!x.path.startsWith('node_modules/'));const q=$('search').value.trim().toLowerCase();if(state.view==='images')a=a.filter(x=>x.type==='file'&&['png','jpg','jpeg','gif','webp','svg'].includes(ext(x.name)));if(state.view==='recent')a=a.filter(x=>x.type==='file');if(q)a=a.filter(x=>x.name.toLowerCase().includes(q));return a}
+function render(){const a=filtered(),files=state.items.filter(x=>x.type==='file'),total=files.reduce((s,x)=>s+(x.size||0),0);$('sizeText').textContent=bytes(total);$('sizeBar').style.width=Math.min(100,total/(1024*1024*1024)*100)+'%';$('countText').textContent=state.items.length+' 项';$('recentHint').textContent=Math.min(6,files.length)+' 项';renderCards(files.slice(0,6));$('listTitle').textContent=state.view==='all'?'所有文件':state.view==='images'?'图片':state.view==='recent'?'最近文件':'我的文件';if(!a.length){$('list').innerHTML='<div class="empty"><div style="font-size:42px">◌</div><b>这里还没有文件</b><span>点击右上角“上传”开始使用 Yuansu Drive</span></div>';return}const rows=a.map((x,i)=>`<tr style="animation:rise .35s ${i*25}ms both"><td><div class="file-cell"><div class="tiny-icon">${icon(x)}</div><div><strong>${esc(x.name)}</strong><small>${esc(x.size?bytes(x.size):'文件夹')} · ${esc(x.path)}</small></div></div></td><td>${x.type==='dir'?'文件夹':'文件'}</td><td><div class="row-actions">${x.type==='file'?`<button class="mini" title="下载" data-dl="${esc(x.path)}" data-name="${esc(x.name)}">↓</button>`:''}<button class="mini" title="更多" data-more="${esc(x.path)}">•••</button></div></td></tr>`).join('');$('list').innerHTML=`<table><thead><tr><th>名称</th><th>类型</th><th></th></tr></thead><tbody>${rows}</tbody></table>`}
+function renderCards(files){$('cards').innerHTML=files.length?files.map((x,i)=>`<div class="file-card" style="animation-delay:${i*45}ms" data-card="${esc(x.path)}"><button class="card-more" data-more="${esc(x.path)}">•••</button><div class="card-icon">${icon(x)}</div><div class="card-name">${esc(x.name)}</div><div class="card-meta">${bytes(x.size||0)}</div></div>`).join(''):'<div class="empty" style="grid-column:1/-1;padding:35px">暂无最近文件</div>'}
+async function download(path,name){toast('正在准备 '+name+' …');const u=`https://api.github.com/repos/${encodeURIComponent(cfg.owner)}/${encodeURIComponent(cfg.repo)}/contents/${path.split('/').map(encodeURIComponent).join('/')}?ref=${encodeURIComponent(cfg.branch||'main')}`;const r=await fetch(u,{headers:{Accept:'application/vnd.github.raw+json',Authorization:'Bearer '+cfg.token,'X-GitHub-Api-Version':'2026-03-10'}});if(!r.ok){let d={};try{d=await r.json()}catch{}throw new Error(d.message||'HTTP '+r.status)}const blob=await r.blob(),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);toast('下载开始')}
+async function b64(file,progress){const ab=await file.arrayBuffer(),a=new Uint8Array(ab),step=0x8000;let s='';for(let i=0;i<a.length;i+=step){s+=String.fromCharCode(...a.subarray(i,Math.min(i+step,a.length)));progress(Math.round(i/a.length*100));await new Promise(r=>setTimeout(r,0))}return btoa(s)}
+async function uploadFiles(files){for(const f of files){if(f.size>MAX){toast(f.name+' 超过 80 MiB');continue}const path=prompt('上传路径',f.name);if(!path)continue;try{const content=await b64(f,p=>toast('读取 '+f.name+' · '+p+'%'));let old=null;try{old=await api(`/repos/${cfg.owner}/${cfg.repo}/contents/${path}?ref=${encodeURIComponent(cfg.branch||'main')}`)}catch(e){if(e.status!==404)throw e}const body={message:'Yuansu Drive: '+(old?'更新 ':'上传 ')+f.name,content,branch:cfg.branch||'main'};if(old?.sha)body.sha=old.sha;await api(`/repos/${cfg.owner}/${cfg.repo}/contents/${path}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});toast('✓ '+f.name+' 上传成功')}catch(e){toast(f.name+'：'+e.message)}}await load()}
+function openSettings(){openModal('Yuansu Drive 设置',`<div class="field"><label>GitHub Owner</label><input id="mOwner" value="${esc(cfg.owner||'')}"></div><div class="field"><label>Repository</label><input id="mRepo" value="${esc(cfg.repo||'')}"></div><div class="field"><label>Branch</label><input id="mBranch" value="${esc(cfg.branch||'main')}"></div><div class="field"><label>GitHub Token</label><input id="mToken" type="password" value="${esc(cfg.token||'')}"></div><small style="color:var(--muted)">当前前端已内置 GitHub 连接配置；如需更换仓库，可在这里覆盖并保存。</small>`,async()=>{cfg.owner=$('mOwner').value.trim()||YUANSU_CONFIG.owner;cfg.repo=$('mRepo').value.trim()||YUANSU_CONFIG.repo;cfg.branch=$('mBranch').value.trim()||YUANSU_CONFIG.branch;cfg.token=$('mToken').value.trim()||YUANSU_CONFIG.token;closeModal();toast('配置已保存');load()})}
+function openModal(title,body,ok){state.modal=ok;$('modalTitle').textContent=title;$('modalBody').innerHTML=body;$('modalBg').classList.add('show');setTimeout(()=>$('modalBody').querySelector('input')?.focus(),50)}
+function closeModal(){$('modalBg').classList.remove('show');state.modal=null}
+function openContext(x,y,path){state.contextItem=state.items.find(i=>i.path===path);$('context').innerHTML=`<button data-act="download">↓ 下载</button><button data-act="github">↗ 打开 GitHub</button><button data-act="rename">✎ 重命名</button><button data-act="delete" style="color:var(--danger)">⌫ 删除</button>`;$('context').style.left=Math.min(x,innerWidth-195)+'px';$('context').style.top=Math.min(y,innerHeight-180)+'px';$('context').classList.add('show')}
+document.addEventListener('click',async e=>{const dl=e.target.closest('[data-dl]');if(dl){try{await download(dl.dataset.dl,dl.dataset.name)}catch(x){toast('下载失败：'+x.message)}return}const more=e.target.closest('[data-more]');if(more){e.preventDefault();openContext(e.clientX||40,e.clientY||40,more.dataset.more);return}const card=e.target.closest('[data-card]');if(card){const x=state.items.find(i=>i.path===card.dataset.card);if(x?.type==='file'){try{await download(x.path,x.name)}catch(er){toast('下载失败：'+er.message)}}}});
+$('context').addEventListener('click',async e=>{const act=e.target.dataset.act,x=state.contextItem;if(!act||!x)return;$('context').classList.remove('show');if(act==='download')return download(x.path,x.name);if(act==='github')return window.open(x.html_url,'_blank');if(act==='rename'){const n=prompt('新名称',x.name);if(!n||n===x.name)return;toast('V2.1 将加入无损重命名');return}if(act==='delete'){toast('V2.1 将加入回收站删除，当前先不直接删除 Git 历史文件')}});
+document.addEventListener('click',e=>{if(!e.target.closest('.context'))$('context').classList.remove('show')});
+$('upload').onclick=()=>$('fileInput').click();$('fileInput').onchange=e=>uploadFiles([...e.target.files]).finally(()=>$('fileInput').value='');$('refresh').onclick=load;$('search').oninput=render;
+document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));b.classList.add('active');state.view=b.dataset.view;render()});
+function toggleTheme(){const t=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=t;localStorage.setItem('yuansu-theme',t);$('themeBtn').textContent=t==='dark'?'☀':'☾';$('themeMobile').textContent=t==='dark'?'☀':'☾'}toggleTheme();toggleTheme();$('themeBtn').onclick=toggleTheme;$('themeMobile').onclick=toggleTheme;$('settingsBtn').onclick=openSettings;
+['dragenter','dragover'].forEach(ev=>document.addEventListener(ev,e=>{if(e.dataTransfer?.types?.includes('Files')){$('drop').classList.add('show');e.preventDefault()}}));
+['dragleave'].forEach(ev=>document.addEventListener(ev,e=>{if(e.target===$('drop'))$('drop').classList.remove('show')}));
+document.addEventListener('drop',e=>{if($('drop').classList.contains('show')){e.preventDefault();$('drop').classList.remove('show');uploadFiles([...e.dataTransfer.files])}});
+load();
+})();
+</script>
+</body>
+</html>
