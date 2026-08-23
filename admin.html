@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Yuansu Drive 2.0 · 管理中心</title>
+<style>
+:root{--bg:#080a12;--panel:rgba(18,22,37,.75);--line:rgba(255,255,255,.09);--text:#eef2ff;--muted:#8995b2;--a:#6d5dfc;--b:#39b8ff;--good:#14b889;--bad:#ef5570}
+*{box-sizing:border-box}body{margin:0;color:var(--text);font-family:Inter,"Microsoft YaHei","PingFang SC",sans-serif;background:radial-gradient(circle at 10% 0,rgba(109,93,252,.18),transparent 35%),radial-gradient(circle at 90% 10%,rgba(57,184,255,.12),transparent 30%),var(--bg);min-height:100vh;padding:24px}.wrap{max-width:960px;margin:auto}.head{display:flex;gap:12px;align-items:center;margin-bottom:18px}.logo{width:48px;height:48px;border-radius:15px;display:grid;place-items:center;font-weight:900;font-size:22px;background:linear-gradient(135deg,var(--a),var(--b));box-shadow:0 14px 35px rgba(109,93,252,.3)}h1{margin:0;font-size:24px}.sub{color:var(--muted);font-size:12px;margin-top:4px}.card{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:20px;margin:14px 0;backdrop-filter:blur(20px);box-shadow:0 24px 70px rgba(0,0,0,.24)}h2{font-size:16px;margin:0 0 15px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field label{display:block;color:var(--muted);font-size:11px;margin-bottom:6px}.field input{width:100%;padding:11px;border:1px solid var(--line);background:#0d1220;color:#fff;border-radius:11px;outline:none}.field input:focus{border-color:var(--a);box-shadow:0 0 0 4px rgba(109,93,252,.12)}.btn{padding:10px 14px;border:1px solid var(--line);background:#111727;color:#fff;border-radius:11px;cursor:pointer}.btn.primary{border:0;background:linear-gradient(135deg,var(--a),#7d72ff)}.actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}.drop{padding:45px 20px;text-align:center;border:1.5px dashed #34405d;border-radius:18px;cursor:pointer;transition:.2s}.drop:hover,.drop.drag{border-color:var(--a);background:rgba(109,93,252,.08);transform:translateY(-2px)}.drop b{display:block;font-size:17px;margin-bottom:7px}.drop span{color:var(--muted);font-size:11px}.limit{color:var(--muted);font-size:11px;margin-top:10px}.queue{display:grid;gap:8px;margin-top:13px}.item{border:1px solid var(--line);border-radius:12px;padding:11px}.row{display:flex;justify-content:space-between;font-size:12px}.bar{height:7px;background:#111827;border-radius:50px;overflow:hidden;margin-top:8px}.bar span{display:block;width:0;height:100%;background:linear-gradient(90deg,var(--a),#18d6a4);transition:.2s}.status{margin-top:12px;padding:10px 12px;border-radius:10px;font-size:12px;display:none}.status.show{display:block}.ok{color:#aaf2da;background:rgba(20,184,137,.1);border:1px solid rgba(20,184,137,.2)}.bad{color:#ffc0c9;background:rgba(239,85,112,.1);border:1px solid rgba(239,85,112,.2)}@media(max-width:700px){body{padding:12px}.grid{grid-template-columns:1fr}}
+
+#adminGate{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;padding:20px;background:radial-gradient(circle at 20% 10%,rgba(109,93,252,.22),transparent 35%),radial-gradient(circle at 80% 20%,rgba(57,184,255,.16),transparent 30%),#080a12;backdrop-filter:blur(20px)}
+#adminGate.hidden{display:none}
+.gate-box{width:min(420px,100%);padding:30px;border:1px solid rgba(255,255,255,.1);border-radius:24px;background:rgba(18,22,37,.82);box-shadow:0 30px 90px rgba(0,0,0,.45);text-align:center}
+.gate-logo{width:58px;height:58px;margin:0 auto 15px;border-radius:18px;display:grid;place-items:center;font-size:25px;font-weight:900;color:#fff;background:linear-gradient(135deg,#6d5dfc,#39b8ff);box-shadow:0 14px 35px rgba(109,93,252,.3)}
+.gate-box h2{margin:0 0 7px;font-size:21px;color:#eef2ff}
+.gate-box p{margin:0 0 18px;color:#8995b2;font-size:12px}
+.gate-input{width:100%;padding:13px 14px;border:1px solid rgba(255,255,255,.1);background:#0d1220;color:#fff;border-radius:12px;outline:none;text-align:center}
+.gate-input:focus{border-color:#6d5dfc;box-shadow:0 0 0 4px rgba(109,93,252,.12)}
+.gate-btn{width:100%;margin-top:10px;padding:12px;border:0;border-radius:12px;color:#fff;font-weight:700;background:linear-gradient(135deg,#6d5dfc,#7d72ff);cursor:pointer}
+.gate-error{min-height:18px;margin-top:9px;color:#ff9aaa;font-size:11px}
+@keyframes gateShake{20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+.gate-box.shake{animation:gateShake .35s}
+</style>
+</head>
+<body>
+<div id="adminGate">
+  <div class="gate-box" id="gateBox">
+    <div class="gate-logo">Y</div>
+    <h2>Yuansu Drive 2.0</h2>
+    <p>管理中心已锁定，请输入管理密码</p>
+    <form id="gateForm" autocomplete="off">
+      <input id="adminPassword" class="gate-input" type="password" placeholder="请输入管理密码" autocomplete="current-password" autofocus>
+      <button class="gate-btn" type="submit">解锁管理中心</button>
+      <div id="gateError" class="gate-error"></div>
+    </form>
+  </div>
+</div>
+<div class="wrap">
+<div class="head"><div class="logo">Y</div><div><h1>Yuansu Drive 2.0</h1><div class="sub">管理中心 · GitHub 文件存储 · 单文件最大 80 MiB</div></div></div>
+<div class="card"><h2>GitHub 连接</h2><div class="grid">
+<div class="field"><label>Owner</label><input id="owner" placeholder="你的 GitHub 用户名"></div>
+<div class="field"><label>Repository</label><input id="repo" placeholder="例如 yuansu-drive"></div>
+<div class="field"><label>Branch</label><input id="branch" value="main"></div>
+<div class="field"><label>Fine-grained Token</label><input id="token" type="password" placeholder="github_pat_..."></div>
+</div><div class="actions"><button class="btn primary" id="save">保存配置</button><button class="btn" id="test">测试连接</button><a class="btn" href="index.html" style="text-decoration:none">打开网盘</a></div><div id="status" class="status"></div></div>
+<div class="card"><h2>上传文件</h2><div class="drop" id="drop"><b>☁ 拖拽文件到这里</b><span>或点击选择文件 · 单文件最大 80 MiB · 支持多选</span></div><input type="file" id="files" hidden multiple><div class="limit">Token 只保存到当前浏览器 localStorage，不写进代码。建议 Fine-grained Token 只授权目标仓库 Contents: Read and write。</div><div id="queue" class="queue"></div></div>
+<div class="card"><h2>V2 说明</h2><div style="color:var(--muted);font-size:12px;line-height:1.8">V2 前台重点升级了玻璃拟态、动态背景、Dashboard、最近文件卡片、深浅色切换、响应式布局、拖拽上传入口、右键菜单与更细腻的 hover/入场动画。文件仍然直接存储在 GitHub。</div></div>
+</div>
+
+<script>
+(()=>{
+  'use strict';
+  const PASSWORDS=['best7758521','zbf20130810'];
+  const gate=document.getElementById('adminGate');
+  const box=document.getElementById('gateBox');
+  const form=document.getElementById('gateForm');
+  const input=document.getElementById('adminPassword');
+  const error=document.getElementById('gateError');
+
+  if(sessionStorage.getItem('yuansu-admin-unlocked')==='1'){
+    gate.classList.add('hidden');
+  }
+
+  form.addEventListener('submit',e=>{
+    e.preventDefault();
+    if(PASSWORDS.includes(input.value)){
+      sessionStorage.setItem('yuansu-admin-unlocked','1');
+      gate.classList.add('hidden');
+      error.textContent='';
+      input.value='';
+    }else{
+      error.textContent='密码错误，请重试';
+      box.classList.remove('shake');
+      void box.offsetWidth;
+      box.classList.add('shake');
+      input.select();
+    }
+  });
+})();
+</script>
+<script>
+const YUANSU_CONFIG = {
+  owner: 'lar160212',
+  repo: 'Yuansu_Drivenew',
+  branch: 'main',
+  token: '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'
+};
+
+(()=>{'use strict';const MAX=80*1024*1024,$=id=>document.getElementById(id);let cfg=Object.assign({},YUANSU_CONFIG,JSON.parse(localStorage.getItem('yuansu-drive-config')||'{}'));for(const k of ['owner','repo','branch','token'])$(k).value=cfg[k]|| (k==='branch'?'main':'');
+function save(){cfg={owner:$('owner').value.trim()||YUANSU_CONFIG.owner,repo:$('repo').value.trim()||YUANSU_CONFIG.repo,branch:$('branch').value.trim()||YUANSU_CONFIG.branch,token:$('token').value.trim()||YUANSU_CONFIG.token};localStorage.setItem('yuansu-drive-config',JSON.stringify(cfg));msg('配置已保存',true)}
+function msg(t,ok){const e=$('status');e.textContent=t;e.className='status show '+(ok?'ok':'bad')}
+function api(path,opt={}){return fetch('https://api.github.com'+path,Object.assign({},opt,{headers:Object.assign({'Accept':'application/vnd.github+json','Authorization':'Bearer '+cfg.token,'X-GitHub-Api-Version':'2026-03-10'},opt.headers||{})})).then(async r=>{let d=null;try{d=await r.json()}catch{}if(!r.ok)throw new Error(d?.message||'HTTP '+r.status);return d})}
+$('save').onclick=save;$('test').onclick=async()=>{save();try{const u=await api('/user');await api(`/repos/${cfg.owner}/${cfg.repo}`);msg('连接成功：'+u.login+' → '+cfg.owner+'/'+cfg.repo,true)}catch(e){msg('连接失败：'+e.message,false)}}
+function b64(f,cb){return f.arrayBuffer().then(ab=>{const a=new Uint8Array(ab),step=0x8000;let s='';return (async()=>{for(let i=0;i<a.length;i+=step){s+=String.fromCharCode(...a.subarray(i,Math.min(i+step,a.length)));cb(Math.round(i/a.length*100));await new Promise(r=>setTimeout(r,0))}return btoa(s)})()})}
+async function one(f){if(f.size>MAX)throw new Error(f.name+' 超过 80 MiB');const path=prompt('保存路径',f.name);if(!path)return;const el=document.createElement('div');el.className='item';el.innerHTML='<div class="row"><b>'+f.name+'</b><span>'+fmt(f.size)+'</span></div><div class="bar"><span></span></div><div class="pct" style="color:#8995b2;font-size:11px;margin-top:6px">准备中…</div>';$('queue').appendChild(el);const bar=el.querySelector('.bar span'),pct=el.querySelector('.pct');const content=await b64(f,p=>{bar.style.width=p+'%';pct.textContent='读取 '+p+'%'});let old=null;try{old=await api(`/repos/${cfg.owner}/${cfg.repo}/contents/${path}?ref=${encodeURIComponent(cfg.branch)}`)}catch(e){if(!String(e.message).includes('404'))throw e}const body={message:'Yuansu Drive 2.0: '+(old?'更新 ':'上传 ')+f.name,content,branch:cfg.branch};if(old?.sha)body.sha=old.sha;pct.textContent='提交到 GitHub…';bar.style.width='92%';await api(`/repos/${cfg.owner}/${cfg.repo}/contents/${path}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});bar.style.width='100%';pct.textContent='✓ 上传完成'}
+function fmt(n){let u=['B','KB','MB','GB'],i=0;while(n>=1024&&i<3){n/=1024;i++}return(i?n.toFixed(2):Math.round(n))+' '+u[i]}
+async function run(fs){if(!cfg.token){msg('请先配置 Token',false);return}for(const f of fs){try{await one(f);msg(f.name+' 上传成功',true)}catch(e){msg(f.name+'：'+e.message,false)}}}
+$('drop').onclick=()=>$('files').click();$('files').onchange=e=>run([...e.target.files]);['dragenter','dragover'].forEach(e=>$('drop').addEventListener(e,x=>{x.preventDefault();$('drop').classList.add('drag')}));['dragleave','drop'].forEach(e=>$('drop').addEventListener(e,x=>{x.preventDefault();$('drop').classList.remove('drag')}));$('drop').addEventListener('drop',e=>run([...e.dataTransfer.files]));
+})();
+</script>
+</body></html>
